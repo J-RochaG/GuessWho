@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess Who Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    #game-board {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .character {
+        width: 100px;
+        height: 150px;
+        background-color: #ccc;
+        margin: 10px;
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+    .selected {
+        border-color: red;
+    }
+    .character img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+</head>
+<body>
+    <h1>Guess Who Game</h1>
+    <div id="game-board"></div>
+    <p>Guess the character or their attributes!</p>
+    <input type="text" id="guess-input" placeholder="Enter your guess">
+    <button onclick="checkGuess()">Submit Guess</button>
+    <p id="result"></p>
+
+    <script>
+        const characters = [
+            { name: "Anita", eyeColor: "Blue", hairColor: "Blonde", accessory: "Ribbons", image: "https://guesswhocharacters.info/imgs/anita.jpeg" },
+            { name: "Alfred", eyeColor: "Blue", hairColor: "Red", accessory: "None", image: "https://guesswhocharacters.info/imgs/alfred.jpeg" },
+            { name: "Alex", eyeColor: "Brown", hairColor: "Black", accessory: "None", image: "https://guesswhocharacters.info/imgs/alex.jpeg" },
+            { name: "Anne", eyeColor: "Brown", hairColor: "Black", accessory: "Earings", image: "https://guesswhocharacters.info/imgs/anne.jpeg?format=2500w" },
+            { name: "Bernard", eyeColor: "Brown", hairColor: "Brown", accessory: "Hat", image: "https://guesswhocharacters.info/imgs/bernard.jpeg" },
+            { name: "Bill", eyeColor: "Brown", hairColor: "Red", accessory: "None", image: "https://guesswhocharacters.info/imgs/bill.jpeg" },
+            { name: "Charles", eyeColor: "Brown", hairColor: "Blonde", accessory: "Earing", image: "https://guesswhocharacters.info/imgs/charles.jpeg" },
+            { name: "Claire", eyeColor: "Brown", hairColor: "Red", accessory: "Hat", image: "https://guesswhocharacters.info/imgs/claire.jpeg" },
+            { name: "David", eyeColor: "Brown", hairColor: "Blonde", accessory: "None", image: "https://guesswhocharacters.info/imgs/david.jpeg" },
+            { name: "Peter", eyeColor: "Blue", hairColor: "White", accessory: "None", image: "https://guesswhocharacters.info/imgs/peter.jpeg" },
+            { name: "Robert", eyeColor: "Blue", hairColor: "Brown", accessory: "None", image: "https://guesswhocharacters.info/imgs/robert.jpeg" },
+            { name: "Sam", eyeColor: "Brown", hairColor: "White", accessory: "Glasses", image: "https://guesswhocharacters.info/imgs/sam.jpeg" },
+            { name: "Susan", eyeColor: "Brown", hairColor: "White", accessory: "None", image: "https://guesswhocharacters.info/imgs/susan.jpeg" },
+            { name: "Tom", eyeColor: "Blue", hairColor: "Black", accessory: "Glasses", image: "https://guesswhocharacters.info/imgs/tom.jpeg" },
+            { name: "Richard", eyeColor: "Brown", hairColor: "Brown", accessory: "None", image: "https://guesswhocharacters.info/imgs/richard.jpeg" },
+            { name: "Phillip", eyeColor: "Brown", hairColor: "Black", accessory: "None", image: "https://guesswhocharacters.info/imgs/philip.jpeg" },
+            { name: "Paul", eyeColor: "Brown", hairColor: "White", accessory: "Glasses", image: "https://guesswhocharacters.info/imgs/paul.jpeg" }
+            // Add more characters here
+            // Format: { name: "Name", eyeColor: "EyeColor", hairColor: "HairColor", accessory: "Accessory", image: "ImageURL" }
+        ];
+        const gameBoard = document.getElementById('game-board');
+        const guessInput = document.getElementById('guess-input');
+        const resultMessage = document.getElementById('result');
+
+        characters.forEach(character => {
+            const characterDiv = document.createElement('div');
+            characterDiv.classList.add('character');
+            characterDiv.dataset.name = character.name;
+            characterDiv.dataset.eyeColor = character.eyeColor;
+            characterDiv.dataset.hairColor = character.hairColor;
+            characterDiv.dataset.accessory = character.accessory;
+            characterDiv.innerHTML = `<img src="${character.image}" alt="${character.name}">`;
+            characterDiv.addEventListener('click', () => selectCharacter(character));
+            gameBoard.appendChild(characterDiv);
+        });
+
+        function selectCharacter(character) {
+            if (selectedCharacter) {
+                document.querySelector(`.character[data-name='${selectedCharacter.name}']`).classList.remove('selected');
+            }
+            selectedCharacter = character;
+            document.querySelector(`.character[data-name='${selectedCharacter.name}']`).classList.add('selected');
+        }
+
+        function checkGuess() {
+            const guess = guessInput.value.trim().toLowerCase();
+            if (guess === '') {
+                resultMessage.textContent = "Please enter a guess!";
+                return;
+            }
+            const attributeTypes = ['name', 'eyeColor', 'hairColor', 'accessory'];
+            for (const type of attributeTypes) {
+                const matchedCharacters = characters.filter(character => character[type].toLowerCase() === guess);
+                if (matchedCharacters.length > 0) {
+                    resultMessage.textContent = `Congratulations! ${matchedCharacters.length} character(s) have ${type} matching your guess!`;
+                    showMatchedCharacters(matchedCharacters);
+                    return;
+                }
+            }
+            resultMessage.textContent = "Sorry, no character or attribute matches your guess. Keep guessing!";
+        }
+
+        function showMatchedCharacters(matchedCharacters) {
+            const selectedAttributes = Object.keys(matchedCharacters[0]);
+            for (const character of characters) {
+                const characterDiv = document.querySelector(`.character[data-name='${character.name}']`);
+                if (!matchedCharacters.includes(character)) {
+                    characterDiv.style.display = 'none';
+                } else {
+                    characterDiv.style.display = 'block';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
